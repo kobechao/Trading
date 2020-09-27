@@ -15,6 +15,7 @@
   "dependencies": {
     "@openzeppelin/contracts": "^3.2.0",
     "@optionality.io/clone-factory": "^0.2.1",
-    "@truffle/hdwallet-provider": "^1.1.0"
+    "@truffle/hdwallet-provider": "^1.1.0",
+    "truffle-assertions": "^0.9.2"
   }
 }

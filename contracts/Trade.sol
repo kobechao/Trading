@@ -1,22 +1,25 @@
 pragma solidity >=0.4.22 <0.8.0;
 
 import "./Vote.sol";
+import "./TradeFactory.sol";
 
 contract Trade {
 
     Vote vote;
-    Trade trade;
+    Trade trade; 
 
     enum State {
         OPENED, CREATED, CLOSED
     }
 
     State state;
+    TradeFactory factory;
 
     event NewVoteIsMaked(address indexed _maker, uint _confirmations);
 
-    constructor() public {
+    constructor(address _factoryAddr) public {
         state = State.OPENED;
+        factory = TradeFactory(_factoryAddr);
     }
 
     modifier InState(State _state) {
@@ -35,13 +38,14 @@ contract Trade {
     function castVote() InState(State.CREATED) external {
         if (vote.castVote()) {
             state = State.CLOSED;
+            /** @todo automatic generate next trade or not
+             * 
+             * factory.createTrade();
+             * 
+             */  
         } else {
             return;
         }
-    }
-
-    function getNextTradeContract() public view returns (address) {
-        return address(trade);
     }
 
     function checkState() public view returns (State) {
