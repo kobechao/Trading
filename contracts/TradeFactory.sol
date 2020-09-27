@@ -28,7 +28,7 @@ contract TradeFactory is Ownable {
     address public lastTradeContractAddress;
     constructor() public {}
 
-    function createTrade(uint _confirmation) onlyOwner() external returns (address) {
+    function createTrade(uint _confirmation) external returns (address) {
         Trade trade = new Trade(address(this));
         trade.init(_confirmation);
         lastTradeContractAddress = address(trade);

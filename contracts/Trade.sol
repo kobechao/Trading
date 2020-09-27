@@ -15,6 +15,7 @@ contract Trade {
     State state;
     TradeFactory factory;
 
+    uint public confirmation;
     event NewVoteIsMaked(address indexed _maker, uint _confirmations);
 
     constructor(address _factoryAddr) public {
@@ -32,17 +33,15 @@ contract Trade {
 
         emit NewVoteIsMaked(msg.sender, _confirmation);
         state = State.CREATED;
+        confirmation = _confirmation;
         return true;
     }
 
     function castVote() InState(State.CREATED) external {
         if (vote.castVote()) {
             state = State.CLOSED;
-            /** @todo automatic generate next trade or not
-             * 
-             * factory.createTrade();
-             * 
-             */  
+            factory.createTrade(confirmation);
+            
         } else {
             return;
         }
