@@ -40,7 +40,7 @@ contract("Trade", function (accounts) {
     const addr = await tradeInstance.getVoteContract();
     assert.notDeepEqual(addr, "0x0000000000000000000000000000000000000000", "Wrong initial address of vote contract");
     assert.equal(addr.toString().length, 42, "Wrong length of initial vote address");
-  
+
     voteInstance = await Vote.at(addr);
   });
 
@@ -68,13 +68,18 @@ contract("Trade", function (accounts) {
   });
 
   it("(Trade) should successfully get next trade contract address", async function () {
-    const nextTradeAddress = await factory.lastTradeContractAddress();
+    const nextTradeAddress = await factory.getLastTrade();
     assert.notDeepEqual(nextTradeAddress, "0x0000000000000000000000000000000000000000", "Wrong next trade address");
   });
 
   it("(Trade) should have correct status of next trade contract", async function () {
 
-    const nextTradeAddress = await factory.lastTradeContractAddress();
+    const nextTradeAddress = await factory.getLastTrade();
+    const tradeData = await factory.getTradeData(nextTradeAddress);
+    assert.equal(tradeData[0], 0, "Incorrect index");
+    assert.deepEqual(tradeData[1], tradeInstance.address, "Incorrect createdBy");
+    assert.isTrue(tradeData[2], "Incorrect registered");
+
     const nextTrade = await Trade.at(nextTradeAddress);
 
     const state = await nextTrade.checkState();

@@ -2,7 +2,7 @@ const TradeFactory = artifacts.require("TradeFactory");
 const Trade = artifacts.require("Trade");
 const Vote = artifacts.require("Vote");
 
-contract("TradeFactory", function() {
+contract("TradeFactory", function(accounts) {
 
   let factory;
   let tradeInstance, voteInstance;
@@ -19,23 +19,25 @@ contract("TradeFactory", function() {
     factory = await TradeFactory.deployed();
   })
 
-  it("(Factory) should have correct initial value of last trade contract address", async function() {
-    const _lastTradeContractAddress = await factory.lastTradeContractAddress();
-    assert.deepEqual(_lastTradeContractAddress, "0x0000000000000000000000000000000000000000", "Wrong initial address of last trade contract");
-    assert.equal(_lastTradeContractAddress.toString().length, 42, "Wrong length of initial trade contract address");
-  });
-
   it("(Factory) should successfully create a trade", async function() {
     await factory.createTrade(TEST_CONFIRMATION);
 
-    const _lastTradeContractAddress = await factory.lastTradeContractAddress();
+    const _lastTradeContractAddress = await factory.getLastTrade();
     assert.notDeepEqual(_lastTradeContractAddress, "0x0000000000000000000000000000000000000000", "Wrong initial address of last trade contract");
     assert.equal(_lastTradeContractAddress.toString().length, 42, "Wrong length of initial trade contract address");
     
     tradeInstance = await Trade.at(_lastTradeContractAddress)
+
+    console.log(_lastTradeContractAddress);
+    console.log(tradeInstance.address);
   });
 
   it("(Factory) should have correct status after creation of a trade", async function() {
+
+    const tradeData = await factory.getTradeData(tradeInstance.address);
+    assert.equal(tradeData[0], 0, "Incorrect index");
+    assert.deepEqual(tradeData[1], accounts[0], "Incorrect createdBy");
+    assert.isTrue(tradeData[2], "Incorrect registered");
 
     const state = await tradeInstance.checkState();
     assert.equal(state, TEST_STATE.CREATED, "State should be CREATED.");
